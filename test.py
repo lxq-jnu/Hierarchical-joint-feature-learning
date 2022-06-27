@@ -143,7 +143,7 @@ device = torch.device("cuda:0")
 net_G  = networks.define_En_ADW(1, 1, 64).cuda()
 
 
-model_G_path = "checkpoint/300_net_G.pth"
+model_G_path = "models/300_net_G.pth"
 
 state_dict_G = torch.load(model_G_path, map_location=str(device))
 load_(net_G,state_dict_G)
