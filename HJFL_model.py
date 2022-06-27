@@ -202,7 +202,7 @@ class LaplacianConv(torch.nn.Module):
                   [1, -4, 1],
                   [0, 1, 0]]
 
-        kernel = torch.FloatTensor(kernel).unsqueeze(0).unsqueeze(0).cuda()  # 扩展到4个维度
+        kernel = torch.FloatTensor(kernel).unsqueeze(0).unsqueeze(0).cuda()  
 
         if channels == 3:
             kernel = torch.cat([kernel,kernel,kernel],0)
