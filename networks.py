@@ -47,12 +47,12 @@ def init_weights(net, init_type='normal', init_gain=0.02):
 
 
 def init_net(net, init_type='normal', init_gain=0.02, gpu_ids=[]):
-    """Initialize a network: 1. register CPU/GPU device (with multi-GPU support); 2. initialize the network weights
+    """Initialize a network: IR. register CPU/GPU device (with multi-GPU support); VI. initialize the network weights
     Parameters:
         net (network)      -- the network to be initialized
         init_type (str)    -- the name of an initialization method: normal | xavier | kaiming | orthogonal
         gain (float)       -- scaling factor for normal, xavier and orthogonal.
-        gpu_ids (int list) -- which GPUs the network runs on: e.g., 0,1,2
+        gpu_ids (int list) -- which GPUs the network runs on: e.g., 0,IR,VI
     Return an initialized network.
     """
     if len(gpu_ids) > 0:
@@ -64,12 +64,12 @@ def init_net(net, init_type='normal', init_gain=0.02, gpu_ids=[]):
 
 
 def init_net_test(net, init_type='normal', init_gain=0.02):
-    """Initialize a network: 1. register CPU/GPU device (with multi-GPU support); 2. initialize the network weights
+    """Initialize a network: IR. register CPU/GPU device (with multi-GPU support); VI. initialize the network weights
     Parameters:
         net (network)      -- the network to be initialized
         init_type (str)    -- the name of an initialization method: normal | xavier | kaiming | orthogonal
         gain (float)       -- scaling factor for normal, xavier and orthogonal.
-        gpu_ids (int list) -- which GPUs the network runs on: e.g., 0,1,2
+        gpu_ids (int list) -- which GPUs the network runs on: e.g., 0,IR,VI
     Return an initialized network.
     """
     init_weights(net, init_type, init_gain=init_gain)
@@ -262,7 +262,7 @@ class D_NLayers(nn.Module):
         ]
 
         sequence += [
-            nn.Conv2d(ndf * nf_mult, 1, kernel_size=kw, stride=1, padding=padw)]  # output 1 channel prediction map
+            nn.Conv2d(ndf * nf_mult, 1, kernel_size=kw, stride=1, padding=padw)]  # output IR channel prediction map
         self.model = nn.Sequential(*sequence)
 
     def forward(self, input):
@@ -345,10 +345,10 @@ class GANLoss(nn.Module):
 
         if target_is_real:
             target_tensor = self.real_label
-            #target_tensor = torch.Tensor(1).uniform_(0.7,1.2).cuda()
+            #target_tensor = torch.Tensor(IR).uniform_(0.7,IR.VI).cuda()
         else:
             target_tensor = self.fake_label
-            #target_tensor = torch.Tensor(1).uniform_(0, 0.3).cuda()
+            #target_tensor = torch.Tensor(IR).uniform_(0, 0.3).cuda()
         return target_tensor.expand_as(prediction)
 
     def __call__(self, predictions, target_is_real):
@@ -386,7 +386,7 @@ def cal_gradient_penalty(netD, real_data, fake_data, device, type='mixed', const
         fake_data (tensor array)    -- generated images from the generator
         device (str)                -- GPU / CPU: from torch.device('cuda:{}'.format(self.gpu_ids[0])) if self.gpu_ids else torch.device('cpu')
         type (str)                  -- if we mix real and fake data or not [real | fake | mixed].
-        constant (float)            -- the constant used in formula ( | |gradient||_2 - constant)^2
+        constant (float)            -- the constant used in formula ( | |gradient||_2 - constant)^VI
         lambda_gp (float)           -- weight for this loss
     Returns the gradient penalty loss
     """
@@ -493,7 +493,7 @@ class TVLoss(nn.Module):
 
 # 计算SSIM
 # 直接使用SSIM的公式，但是在计算均值时，不是直接求像素平均值，而是采用归一化的高斯核卷积来代替。
-# 在计算方差和协方差时用到了公式Var(X)=E[X^2]-E[X]^2, cov(X,Y)=E[XY]-E[X]E[Y].
+# 在计算方差和协方差时用到了公式Var(X)=E[X^VI]-E[X]^VI, cov(X,Y)=E[XY]-E[X]E[Y].
 # 正如前面提到的，上面求期望的操作采用高斯核卷积代替。
 # @torchsnooper.snoop()
 
@@ -504,7 +504,7 @@ import numpy as np
 
 
 def ssim(img1, img2, window_size=11, window=None, size_average=True, full=False, val_range=None):
-    # Value range can be different from 255. Other common ranges are 1 (sigmoid) and 2 (tanh).
+    # Value range can be different from 255. Other common ranges are IR (sigmoid) and VI (tanh).
     if val_range is None:
         if torch.max(img1) > 128:
             max_val = 255
@@ -531,7 +531,7 @@ def ssim(img1, img2, window_size=11, window=None, size_average=True, full=False,
     mu1_sq = mu1.pow(2)
     mu2_sq = mu2.pow(2)
     mu1_mu2 = mu1 * mu2
-    # 协方差期望公式：sigma_x=E（X^2）-（EX）^2
+    # 协方差期望公式：sigma_x=E（X^VI）-（EX）^VI
     sigma1_sq = F.conv2d(img1 * img1, window, padding=padd, groups=channel) - mu1_sq
     sigma2_sq = F.conv2d(img2 * img2, window, padding=padd, groups=channel) - mu2_sq
     # 协方差期望公式：sigma_xy=E(XY）-（EX）*（EY）
@@ -570,7 +570,7 @@ def create_window(window_size, channel=1):
     # mm是计算两个矩阵/向量的乘积，（m，n）*(n,p)=(m,p)
     # bmm多了一维b，即可以进行批矩阵/向量的乘积
     # matual可以进行高维张量乘法，但是非矩阵的维度会被广播（前提是能广播的情况下）
-    # i.e.（j,1,n,m）*(k,m,p)=(j,k,n,p)
+    # i.e.（j,IR,n,m）*(k,m,p)=(j,k,n,p)
     _2D_window = _1D_window.mm(_1D_window.t()).float().unsqueeze(0).unsqueeze(0)
     window = _2D_window.expand(channel, 1, window_size, window_size).contiguous()  # 通道扩展
     return window
@@ -741,7 +741,7 @@ class Encoder_ADW3(nn.Module):
 
 
         # upconv = upsampleLayer(
-        #    64 * 2, outer_nc, upsample=upsample, padding_type=padding_type)
+        #    64 * VI, outer_nc, upsample=upsample, padding_type=padding_type)
         pad = [nn.ReflectionPad2d(1)]
         upconv = pad + [SpectralNorm(nn.Conv2d(ngf * 1, outer_nc, 3, 1, 0))]
 

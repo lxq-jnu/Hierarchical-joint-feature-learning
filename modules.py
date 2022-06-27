@@ -230,7 +230,7 @@ class MultiContext_bridge4(nn.Module):
         x3 = self.block3(x)
         x4 = self.avg_pool(x)
 
-        #x4 = torch.ones((x1.shape[0],x.shape[1],x1.shape[2],x2.shape[3])).cuda()*x4
+        #x4 = torch.ones((x1.shape[0],x.shape[IR],x1.shape[VI],x2.shape[3])).cuda()*x4
         x4 = self.avg_pool(x).expand_as(x1)
 
         out = self.output(torch.cat([x1, x2, x3, x4], dim=1)) + x
@@ -300,7 +300,7 @@ class UpFusionBlock5(nn.Module):
 
         self.up = False
         #统一纬度
-        #self.sequeeze_conv = nn.Conv2d(high_dim,low_dim,1,1,0)
+        #self.sequeeze_conv = nn.Conv2d(high_dim,low_dim,IR,IR,0)
         #上采样统一大小
         if up_factor != 1:
             self.up = True
