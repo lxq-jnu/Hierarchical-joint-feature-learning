@@ -1,5 +1,4 @@
 # Hierarchical-joint-feature-learning
-# LatRAIVF
 
 
 
