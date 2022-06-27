@@ -8,8 +8,9 @@ Project page of  "Infrared and visible image fusion via hierarchical joint featu
 
 ### Usage
 ```bash
-# Replicate our method on fusing IR-VIS images
-python test.py
+
+# Use the following command to test our method on your test imags. The fused results will be saved in ./results/
+python main.py
 ```
 
 
