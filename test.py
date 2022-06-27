@@ -96,7 +96,7 @@ class ImageSequence(data.Dataset):
 
 
 def _crop(img,ow,oh):
-    #ow, oh = raw_img.size #ow是水平方向，oh是竖直方向
+    #ow, oh = raw_img.size 
     temp_arr = img[:,:,:oh,:ow]
 
     return temp_arr
